@@ -8,7 +8,7 @@ from flask import Flask, Response, jsonify, request
 from app.services.health_service import process_patient
 from app.utils import db
 from app.utils.temporary_report import read_and_remove_report
-from config.config import API_AUTH_TOKEN
+from config.config import API_AUTH_TOKEN, API_RECORDS_ENABLED
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
@@ -22,7 +22,11 @@ FIELD_RANGES = {
     "weight": (30, 200, False),
     "height": (1, 2.2, False),
 }
-ALLOWED_PAYLOAD_FIELDS = {*FIELD_RANGES, "save_to_db", "generate_pdf"}
+ALLOWED_PAYLOAD_FIELDS = {*FIELD_RANGES, "synthetic_data_confirmed", "save_to_db", "generate_pdf"}
+RESEARCH_DISCLAIMER = (
+    "Research demonstration only; not clinically validated, not medical advice, "
+    "and not for diagnosis, treatment, or care decisions. Synthetic inputs only."
+)
 
 
 @app.after_request
@@ -46,12 +50,16 @@ def require_api_token():
         response.status_code = 401
         response.headers["WWW-Authenticate"] = "Bearer"
         return response
+    if request.endpoint == "records" and not API_RECORDS_ENABLED:
+        return jsonify({"error": "Records endpoint is disabled"}), 404
     return None
 
 
 def parse_patient_payload(payload):
     if not isinstance(payload, dict):
         raise TypeError("Request body must be a JSON object")
+    if payload.get("synthetic_data_confirmed") is not True:
+        raise ValueError("synthetic_data_confirmed must be true; use fictional sample data only")
 
     unknown = sorted(set(payload) - ALLOWED_PAYLOAD_FIELDS)
     if unknown:
@@ -77,6 +85,8 @@ def parse_patient_payload(payload):
         value = payload.get(field, default)
         if not isinstance(value, bool):
             raise TypeError(f"{field} must be a boolean")
+        if field == "save_to_db" and value:
+            raise ValueError("API database storage is disabled")
         values[field] = value
     return values
 
@@ -118,6 +128,7 @@ def predict():
         return response
 
     return jsonify({
+        "disclaimer": RESEARCH_DISCLAIMER,
         "patient_id": result.patient_id,
         "risk": result.risk_label,
         "bmi": result.bmi,

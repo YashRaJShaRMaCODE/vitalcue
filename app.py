@@ -1,4 +1,4 @@
-"""Streamlit UI entry point for AgeWell."""
+"""Streamlit UI entry point for VitalCue."""
 import html
 import logging
 
@@ -41,7 +41,7 @@ def reset_sample():
 def clear_temporary_report():
     st.session_state.pop("last_pdf_data", None)
 
-st.set_page_config(page_title="AgeWell · Research Demo", page_icon="🩺", layout="wide")
+st.set_page_config(page_title="VitalCue · Research Demo", page_icon="🩺", layout="wide")
 
 st.markdown("""
 <style>
@@ -86,7 +86,7 @@ input,textarea,[data-baseweb="select"]>div{border-radius:8px!important}
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<section class='agewell-hero'><p class='agewell-hero__eyebrow'>AgeWell / Research prototype</p><h1>Health signals, made clearer.</h1><p class='agewell-hero__summary'>Explore how a research model responds to fictional sample values. This demo is not for clinical use.</p><span class='agewell-hero__tag'>Sample inputs only</span></section>", unsafe_allow_html=True)
+st.markdown("<section class='agewell-hero'><p class='agewell-hero__eyebrow'>VitalCue / Research prototype</p><h1>Health signals, made clearer.</h1><p class='agewell-hero__summary'>Explore how a research model responds to fictional sample values. This demo is not for clinical use.</p><span class='agewell-hero__tag'>Sample inputs only</span></section>", unsafe_allow_html=True)
 
 st.warning(
     "Research demo only. Predictions and suggestions are not a diagnosis or medical advice. "
@@ -153,7 +153,7 @@ if predict_btn:
                 save_to_db=insert_toggle, generate_pdf=pdf_toggle, send_alert=alert_toggle,
             )
         except Exception:
-            logger.exception("AgeWell prediction workflow failed")
+            logger.exception("VitalCue prediction workflow failed")
             st.error("Prediction could not be completed. Check the server logs for details.")
             result = None
 
@@ -196,7 +196,7 @@ if predict_btn:
                 st.session_state["last_pdf_data"] = read_and_remove_report(result.pdf_file)
                 st.info("The PDF is held in this session's memory. Clear it below when you are done.")
             except OSError:
-                logger.exception("AgeWell temporary report could not be read and removed")
+                logger.exception("VitalCue temporary report could not be read and removed")
                 st.warning("The report could not be prepared for download. The prediction is still available.")
 
         if alert_toggle and result.risk == 1:
@@ -210,7 +210,7 @@ pdf_ready = bool(pdf_data)
 pdf_slot.download_button(
     "Download report PDF",
     data=pdf_data,
-    file_name="AgeWell_Report.pdf",
+    file_name="VitalCue_Report.pdf",
     mime="application/pdf",
     disabled=not pdf_ready,
     help="Enable PDF report before predicting to create a downloadable report.",
@@ -239,8 +239,8 @@ elif st.button("Refresh table from DB"):
             ax.set_ylabel("systolic_bp")
             st.pyplot(fig)
     except Exception:
-        logger.exception("AgeWell records query failed")
+        logger.exception("VitalCue records query failed")
         st.error("Records could not be loaded. Check the database configuration and server logs.")
 
 st.markdown("---")
-st.caption("AgeWell research demo · Fictional sample values only · Not a medical tool.")
+st.caption("VitalCue research demo · Fictional sample values only · Not a medical tool.")

@@ -1,10 +1,10 @@
-# AgeWell
+# VitalCue
 
-An educational health-risk prediction prototype with a Streamlit demo and an optional authenticated Flask API.
+VitalCue is an educational health-risk prediction prototype with a Streamlit demo and an optional authenticated Flask API.
 
 > **Research demo only.** The model is not clinically validated. Results and generated food/activity examples are not medical advice and must not guide care decisions. Use synthetic inputs only; never enter real patient or identifying information.
 
-## Live demo
+## Hosted demo
 
 https://agewell-risk-demo.onrender.com/
 
@@ -48,10 +48,10 @@ python -m app.routes.api
 ```
 
 - `GET /health` — service health; no patient data.
-- `POST /predict` — requires `Authorization: Bearer <token>` and a JSON body containing `age`, `heart_rate`, `systolic_bp`, `cholesterol`, `weight`, and `height`.
-- `GET /records` — requires the same bearer token and a configured MySQL database.
+- `POST /predict` — requires `Authorization: Bearer <token>` and a JSON body containing `age`, `heart_rate`, `systolic_bp`, `cholesterol`, `weight`, `height`, and `synthetic_data_confirmed: true`. Requests without this explicit fictional-data confirmation are rejected. JSON results repeat the research-only/non-clinical warning for downstream clients.
+- `GET /records` — disabled by default. It requires `AGEWELL_API_RECORDS_ENABLED=true`, the same bearer token, and a configured MySQL database; it exposes stored health values, so only enable it in an isolated, single-owner environment.
 
-Prediction requests do not save records or create reports unless `save_to_db` or `generate_pdf` is explicitly set to `true`. When `generate_pdf` is true, `POST /predict` returns the report as an `application/pdf` attachment, with risk label, BMI and prototype score in response headers; its temporary server file is removed after reading. Treat the downloaded report as sensitive health information. Do not expose a token in browser code, logs, screenshots or a public repository.
+API predictions never persist records, even if `save_to_db` is requested. Reports are generated only when `generate_pdf` is explicitly set to `true`; `POST /predict` then returns an `application/pdf` attachment, with risk label, BMI and prototype score in response headers. The temporary server file is removed after reading. Treat the downloaded report as sensitive health information. Do not expose a token in browser code, logs, screenshots or a public repository.
 
 ## Project map
 
@@ -61,6 +61,10 @@ Prediction requests do not save records or create reports unless `save_to_db` or
 - `app/models/` — predictor and serialized research model.
 - `app/utils/` — database, PDF and email helpers.
 - `tests/` — privacy-default and report-file checks.
+
+## Possible paid offer
+
+The safe commercial direction is an instructor-led workshop for data-science classes on model limitations, synthetic-data demos, and privacy-by-default workflows. VitalCue is the teaching example, not a health service. A workshop should use fictional values only and explain how this prototype separates classifier inputs, BMI, and rule-based examples. Validate demand with instructors before quoting or charging, and verify model and training-data licenses before including this repository in paid materials. Do not sell health predictions or patient-data handling through this app.
 
 ## Run checks
 
@@ -72,4 +76,4 @@ GitHub Actions runs Python compilation and the test suite on pushes and pull req
 
 ## Privacy and limitations
 
-This prototype has not been clinically validated or assessed for medical use. Public hosting is intended only for synthetic sample values. The hosted service has no database or email credentials configured, and the UI disables record storage until a complete local MySQL configuration is provided. Before any real-world use, obtain clinical, privacy, security and regulatory review, and build appropriate consent, access control, retention and monitoring.
+This prototype has not been clinically validated or assessed for medical use. Public hosting is intended only for synthetic sample values. The hosted service has no database or email credentials configured, and the UI disables record storage until a complete local MySQL configuration is provided. The Render Free service is a demo only: it can sleep after 15 idle minutes and its filesystem is temporary. Before any real-world use, obtain clinical, privacy, security and regulatory review, and build appropriate consent, access control, retention and monitoring. Do not sell clinical predictions from this prototype.

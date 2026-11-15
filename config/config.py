@@ -7,6 +7,7 @@ load_dotenv()
 
 MODEL_PATH = os.getenv("AGEWELL_MODEL_PATH", "app/models/agewell_model.joblib")
 API_AUTH_TOKEN = os.getenv("AGEWELL_API_TOKEN", "")
+API_RECORDS_ENABLED = os.getenv("AGEWELL_API_RECORDS_ENABLED", "false").lower() == "true"
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
