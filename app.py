@@ -7,7 +7,11 @@ import streamlit as st
 
 from app.services.health_service import process_patient
 from app.utils import db
-from app.utils.leadhub import is_configured, subscribe_research_updates
+from app.utils.leadhub import (
+    get_related_products,
+    is_configured,
+    subscribe_research_updates,
+)
 from app.utils.temporary_report import read_and_remove_report
 from config.config import DB_CONFIGURED, EMAIL_ALERTS_ENABLED, LOCAL_STORAGE_ENABLED
 
@@ -275,3 +279,18 @@ if is_configured(leadhub_base_url):
                 "agewell-risk-demo.onrender.com",
             )
             (st.success if success else st.warning)(message)
+    with st.form("vitalcue-related-products"):
+        related_consent = st.checkbox("Show me relevant products and services too. This does not share health or usage data.")
+        related_submitted = st.form_submit_button("Show suggestions")
+    if related_submitted:
+        if not related_consent:
+            st.info("Select the separate consent box to request suggestions.")
+        else:
+            suggestions = get_related_products(leadhub_base_url, "vitalcue")
+            if suggestions:
+                st.subheader("Our other products")
+                for item in suggestions:
+                    st.link_button(item["name"], item["url"])
+                    st.caption(item["reason"])
+            else:
+                st.info("No related products are available right now.")

@@ -10,7 +10,7 @@ https://agewell-risk-demo.onrender.com/
 
 The hosted demo does not save predictions, generate email alerts, or connect to a database. Local database storage and email controls are hidden unless `AGEWELL_LOCAL_STORAGE_ENABLED=true` is explicitly set; leave it `false` for hosted deployments. Inputs are processed by the public hosting service, so use fictional sample values only; the app requires you to confirm this before running a prediction. If you request a PDF, the generated file is removed immediately after its bytes are loaded into the current Streamlit session for download. Use **Reset fictional sample** to clear entered values, consent, options and any session-held report bytes.
 
-An optional research/workshop signup appears only when `LEADHUB_BASE_URL` is configured with the separate HTTPS LeadHub service. It sends only an email after explicit opt-in; health values and reports are never included. The CLI now runs one fixed fictional sample and cannot accept, save, or email arbitrary patient inputs.
+An optional research/workshop signup appears only when `LEADHUB_BASE_URL` is configured with the separate HTTPS LeadHub service. It sends only an email after explicit opt-in; health values and reports are never included. A separate opt-in can request related products; that request sends only the `vitalcue` product ID and never includes health inputs or usage history. The CLI now runs one fixed fictional sample and cannot accept, save, or email arbitrary patient inputs.
 
 ## What it does
 

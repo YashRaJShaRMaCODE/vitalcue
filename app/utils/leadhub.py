@@ -2,7 +2,7 @@
 import json
 import re
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -26,6 +26,39 @@ def _https_origin(base_url):
 
 def is_configured(base_url):
     return bool(_https_origin(base_url))
+
+
+def _safe_recommendation(item):
+    if not isinstance(item, dict) or not all(isinstance(item.get(key), str) for key in ("name", "reason", "url")):
+        return False
+    try:
+        parsed = urlparse(item["url"])
+        hostname = parsed.hostname or ""
+        return (
+            parsed.scheme == "https"
+            and hostname
+            and not parsed.username
+            and not parsed.password
+            and hostname != "example.com"
+            and not hostname.endswith(".example.com")
+        )
+    except ValueError:
+        return False
+
+
+def get_related_products(base_url, project):
+    origin = _https_origin(base_url)
+    if not origin:
+        return []
+    query = urlencode({"project": project, "consent": "true"})
+    request = Request(f"{origin}/api/recommendations?{query}", headers={"Accept": "application/json"})
+    try:
+        with urlopen(request, timeout=5) as response:
+            result = json.loads(response.read())
+    except (HTTPError, URLError, TimeoutError, ValueError, OSError):
+        return []
+    items = result.get("items", []) if isinstance(result, dict) else []
+    return [item for item in items if _safe_recommendation(item)] if isinstance(items, list) else []
 
 
 def subscribe_research_updates(email, consent, base_url, source):
