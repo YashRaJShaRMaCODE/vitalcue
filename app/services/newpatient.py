@@ -1,50 +1,17 @@
-"""CLI entry point: enter a new patient's details, predict risk, save to
-MySQL, generate a PDF report, and email an alert for high-risk patients."""
-import logging
-
-import pyttsx3
-
+"""Run one fictional VitalCue sample without saving, reporting, or emailing."""
 from app.services.health_service import process_patient
-from app.utils import db
-
-logger = logging.getLogger(__name__)
 
 
 def main():
-    db.init_db()
-
-    print("\nEnter new patient details:\n")
-    age = int(input("Age: "))
-    hr = int(input("Heart Rate: "))
-    bp = int(input("Systolic BP: "))
-    chol = int(input("Cholesterol: "))
-    weight = float(input("Weight (kg): "))
-    height = float(input("Height (m): "))
-
+    print("Research demo only · fictional sample values · not a medical tool")
     result = process_patient(
-        age, hr, bp, chol, weight, height, save_to_db=True, generate_pdf=True
+        65, 80, 120, 180, 65, 1.7,
+        save_to_db=False,
+        generate_pdf=False,
+        send_alert=False,
     )
-
-    print(f"\n✅ Predicted Risk: {result.risk_label}")
-    print(f"📊 BMI: {result.bmi} | 🧮 Health Score: {result.health_score}")
-    print(f"🥗 Food Plan: {result.food_plan}")
-    print(f"💪 Exercise Plan: {result.exercise_plan}")
-    if result.patient_id is not None:
-        print(f"🧠 Saved to database. Patient ID: {result.patient_id}")
-    if result.pdf_file:
-        print(f"📄 PDF report generated: {result.pdf_file}")
-    if result.email_sent:
-        print("📧 High-risk alert email sent.")
-
-    try:
-        engine = pyttsx3.init()
-        engine.say(
-            f"The predicted risk is {result.risk_label}. "
-            f"BMI is {result.bmi} and health score is {result.health_score}."
-        )
-        engine.runAndWait()
-    except Exception:  # noqa: BLE001 - optional speech output must not fail the CLI flow
-        logger.warning("Optional speech output is unavailable")
+    print(f"Sample label: {result.risk_label} · BMI reference: {result.bmi}")
+    print("No values were saved, emailed, or added to a report.")
 
 
 if __name__ == "__main__":

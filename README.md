@@ -8,7 +8,9 @@ VitalCue is an educational health-risk prediction prototype with a Streamlit dem
 
 https://agewell-risk-demo.onrender.com/
 
-The hosted demo does not save predictions, generate email alerts, or connect to a database. Inputs are processed by the public hosting service, so use fictional sample values only; the app requires you to confirm this before running a prediction. If you request a PDF, the generated file is removed immediately after its bytes are loaded into the current Streamlit session for download. Use **Reset fictional sample** to clear entered values, consent, options and any session-held report bytes.
+The hosted demo does not save predictions, generate email alerts, or connect to a database. Local database storage and email controls are hidden unless `AGEWELL_LOCAL_STORAGE_ENABLED=true` is explicitly set; leave it `false` for hosted deployments. Inputs are processed by the public hosting service, so use fictional sample values only; the app requires you to confirm this before running a prediction. If you request a PDF, the generated file is removed immediately after its bytes are loaded into the current Streamlit session for download. Use **Reset fictional sample** to clear entered values, consent, options and any session-held report bytes.
+
+An optional research/workshop signup appears only when `LEADHUB_BASE_URL` is configured with the separate HTTPS LeadHub service. It sends only an email after explicit opt-in; health values and reports are never included. The CLI now runs one fixed fictional sample and cannot accept, save, or email arbitrary patient inputs.
 
 ## What it does
 
@@ -36,7 +38,7 @@ Start the demo:
 streamlit run app.py
 ```
 
-Optional database, report and email settings are documented in `.env.example`. Keep all real secrets in a local `.env` file and never commit them. Database storage controls stay disabled until all required MySQL settings are present. Email alerts require an explicit opt-in for each run and remain off in the service/API defaults.
+Optional database, report and email settings are documented in `.env.example`. Keep all real secrets in a local `.env` file and never commit them. UI database storage and email alerts remain unavailable unless you explicitly set `AGEWELL_LOCAL_STORAGE_ENABLED=true`; storage also requires all MySQL settings, and alerts require `EMAIL_ALERTS_ENABLED=true` plus an explicit per-run opt-in. Keep local storage disabled on public hosting.
 
 ## Optional API
 
@@ -55,11 +57,12 @@ API predictions never persist records, even if `save_to_db` is requested. Report
 
 ## Project map
 
-- `app.py` — Streamlit interface.
+- `app.py` — Streamlit interface and optional research signup.
 - `app/routes/api.py` — authenticated Flask endpoints.
 - `app/services/health_service.py` — model workflow and opt-in side effects.
 - `app/models/` — predictor and serialized research model.
 - `app/utils/` — database, PDF and email helpers.
+- `app/services/newpatient.py` — fixed fictional CLI sample with all persistence and alerts disabled.
 - `tests/` — privacy-default and report-file checks.
 
 ## Possible paid offer

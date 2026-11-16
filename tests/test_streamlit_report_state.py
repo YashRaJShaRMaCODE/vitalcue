@@ -5,6 +5,19 @@ from streamlit.testing.v1 import AppTest
 
 
 class StreamlitReportStateTests(unittest.TestCase):
+    def test_local_storage_controls_are_hidden_by_default(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path), default_timeout=30)
+        app.session_state["save_to_db"] = True
+        app.session_state["send_alert"] = True
+        app.run()
+
+        self.assertFalse(app.exception)
+        checkbox_labels = [element.label for element in app.get("checkbox")]
+        self.assertNotIn("Save record to MySQL", checkbox_labels)
+        self.assertNotIn("Email high-risk alert (requires saved record + PDF)", checkbox_labels)
+        self.assertTrue(any("Local database storage and email alerts are disabled" in element.value for element in app.get("info")))
+
     def test_prediction_shows_classifier_inputs_separately_from_bmi_fields(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
         app = AppTest.from_file(str(app_path), default_timeout=30)

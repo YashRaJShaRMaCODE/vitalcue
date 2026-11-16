@@ -16,6 +16,7 @@ DB_CONFIG = {
     "database": os.getenv("DB_NAME", "agewell_db"),
 }
 DB_CONFIGURED = all(os.getenv(key) for key in ("DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"))
+LOCAL_STORAGE_ENABLED = os.getenv("AGEWELL_LOCAL_STORAGE_ENABLED", "false").lower() == "true"
 
 EMAIL_CONFIG = {
     "sender": os.getenv("EMAIL_SENDER", ""),

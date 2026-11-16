@@ -1,13 +1,15 @@
 """Streamlit UI entry point for VitalCue."""
 import html
 import logging
+import os
 
 import streamlit as st
 
 from app.services.health_service import process_patient
 from app.utils import db
+from app.utils.leadhub import is_configured, subscribe_research_updates
 from app.utils.temporary_report import read_and_remove_report
-from config.config import DB_CONFIGURED, EMAIL_ALERTS_ENABLED
+from config.config import DB_CONFIGURED, EMAIL_ALERTS_ENABLED, LOCAL_STORAGE_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -128,13 +130,19 @@ with colA:
 with colB:
     pdf_slot = st.empty()
 with colC:
-    insert_toggle = st.checkbox("Save record to MySQL", value=False, disabled=not DB_CONFIGURED, key="save_to_db")
+    insert_toggle = (
+        st.checkbox("Save record to MySQL", value=False, disabled=not DB_CONFIGURED, key="save_to_db")
+        if LOCAL_STORAGE_ENABLED else False
+    )
     pdf_toggle = st.checkbox("Create a PDF report", value=False, key="create_pdf")
-    alert_toggle = st.checkbox(
-        "Email high-risk alert (requires saved record + PDF)",
-        value=False,
-        disabled=not (EMAIL_ALERTS_ENABLED and insert_toggle and pdf_toggle),
-        key="send_alert",
+    alert_toggle = (
+        st.checkbox(
+            "Email high-risk alert (requires saved record + PDF)",
+            value=False,
+            disabled=not (EMAIL_ALERTS_ENABLED and DB_CONFIGURED and insert_toggle and pdf_toggle),
+            key="send_alert",
+        )
+        if LOCAL_STORAGE_ENABLED else False
     )
 
 st.button(
@@ -222,7 +230,9 @@ if pdf_ready and st.button("Clear temporary report", key="clear-agewell-report")
 st.markdown("---")
 
 st.subheader("Optional local storage")
-if not DB_CONFIGURED:
+if not LOCAL_STORAGE_ENABLED:
+    st.info("Local database storage and email alerts are disabled. This demo does not save predictions or send alerts.")
+elif not DB_CONFIGURED:
     st.info("Database storage is off for this demo. Sample predictions are not saved.")
 elif st.button("Refresh table from DB"):
     try:
@@ -244,3 +254,24 @@ elif st.button("Refresh table from DB"):
 
 st.markdown("---")
 st.caption("VitalCue research demo · Fictional sample values only · Not a medical tool.")
+
+leadhub_base_url = os.environ.get("LEADHUB_BASE_URL", "")
+if is_configured(leadhub_base_url):
+    st.markdown("---")
+    st.subheader("Research and workshop updates")
+    st.caption("Email only. This signup never sends health values, reports, or prediction results.")
+    with st.form("vitalcue-research-signup"):
+        research_email = st.text_input("Email address", max_chars=254)
+        research_consent = st.checkbox("Email me VitalCue research and workshop updates. I can unsubscribe anytime.")
+        submitted = st.form_submit_button("Join the research list")
+    if submitted:
+        if not research_consent:
+            st.warning("Please opt in before joining the research list.")
+        else:
+            success, message = subscribe_research_updates(
+                research_email,
+                research_consent,
+                leadhub_base_url,
+                "agewell-risk-demo.onrender.com",
+            )
+            (st.success if success else st.warning)(message)
