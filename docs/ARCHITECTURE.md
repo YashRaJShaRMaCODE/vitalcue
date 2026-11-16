@@ -1,6 +1,6 @@
-# VitalCue architecture
+# AgeWell Health Risk Prediction (VitalCue) architecture
 
-**As-is review:** 2026-11-17. This describes the checked repository, not a claim that its public deployment is healthy. The playbook records the Render route as HTTP 503; it has not been rechecked in this task.
+**As-is review:** 2026-11-17. Repository: `AgeWell-Health-Risk-Prediction`; its README/playbook call the demo VitalCue. This describes the checked repository, not a claim that its public deployment is healthy. The playbook records the Render route as HTTP 503; it has not been rechecked in this task.
 
 ## Current boundaries
 

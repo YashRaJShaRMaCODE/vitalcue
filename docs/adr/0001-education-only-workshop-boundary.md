@@ -1,4 +1,4 @@
-# ADR 0001: Keep VitalCue an education-only workshop demo
+# ADR 0001: Keep AgeWell / VitalCue an education-only workshop demo
 
 - **Status:** Accepted for the current validation phase
 - **Date:** 2026-11-17

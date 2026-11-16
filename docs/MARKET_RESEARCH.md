@@ -1,7 +1,8 @@
-# VitalCue market research
+# AgeWell Health Risk Prediction (VitalCue) market research
 
 **Research checked:** 2026-11-17
 **Status:** initial desk research; buyer demand, willingness to pay, and product-market fit are unverified.
+**Repository:** `AgeWell-Health-Risk-Prediction`; **demo/product name in the README and playbook:** VitalCue.
 
 ## Product and buyer hypothesis
 

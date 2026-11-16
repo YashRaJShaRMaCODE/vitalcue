@@ -1,4 +1,4 @@
-# VitalCue — synthetic health-model learning workshop
+# AgeWell (VitalCue) — synthetic health-model learning workshop
 
 **A practical, instructor-led session on how to question a health-model output—using fictional data only.**
 

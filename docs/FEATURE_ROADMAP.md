@@ -1,6 +1,6 @@
-# VitalCue feature roadmap
+# AgeWell Health Risk Prediction (VitalCue) feature roadmap
 
-This roadmap supports the workshop hypothesis in [market research](MARKET_RESEARCH.md), not a clinical product. All feature ideas use fictional, synthetic examples only. No upload of health records, free-text symptoms, individualized medical advice, clinical claims, patient analytics, or automated outreach is in scope.
+This roadmap is for the AgeWell repository's VitalCue demo and supports the workshop hypothesis in [market research](MARKET_RESEARCH.md), not a clinical product. All feature ideas use fictional, synthetic examples only. No upload of health records, free-text symptoms, individualized medical advice, clinical claims, patient analytics, or automated outreach is in scope.
 
 Effort is a rough relative engineering estimate (S/M/L), not a delivery commitment. Impact is expected learning or instructor value, not measured revenue.
 
