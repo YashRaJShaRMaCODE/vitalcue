@@ -53,6 +53,8 @@ python -m app.routes.api
 - `POST /predict` — requires `Authorization: Bearer <token>` and a JSON body containing `age`, `heart_rate`, `systolic_bp`, `cholesterol`, `weight`, `height`, and `synthetic_data_confirmed: true`. Requests without this explicit fictional-data confirmation are rejected. JSON results repeat the research-only/non-clinical warning for downstream clients.
 - `GET /records` — disabled by default. It requires `AGEWELL_API_RECORDS_ENABLED=true`, the same bearer token, and a configured MySQL database; it exposes stored health values, so only enable it in an isolated, single-owner environment.
 
+JSON requests larger than 16 KiB receive a bounded JSON `413` response; API prediction errors are not returned as HTML pages.
+
 API predictions never persist records, even if `save_to_db` is requested. Reports are generated only when `generate_pdf` is explicitly set to `true`; `POST /predict` then returns an `application/pdf` attachment, with risk label, BMI and prototype score in response headers. The temporary server file is removed after reading. Treat the downloaded report as sensitive health information. Do not expose a token in browser code, logs, screenshots or a public repository.
 
 ## Project map

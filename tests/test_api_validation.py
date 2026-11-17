@@ -70,6 +70,22 @@ class ApiValidationTests(unittest.TestCase):
         self.assertEqual(response.headers["Cache-Control"], "no-store")
         self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
 
+    def test_oversized_json_returns_a_bounded_json_error(self):
+        response = self.client.post(
+            "/predict",
+            data=b'{"payload":"' + b"x" * (16 * 1024) + b'"}',
+            content_type="application/json",
+            headers={"Authorization": f"Bearer {self.auth_token}"},
+        )
+
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(
+            response.get_json(),
+            {"error": "Request body must be 16 KiB or smaller"},
+        )
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+        self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
+
     def test_unknown_fields_are_rejected(self):
         response = self.post_json({
             "age": 65, "heart_rate": 80, "systolic_bp": 120,

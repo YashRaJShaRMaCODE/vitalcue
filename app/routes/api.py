@@ -4,6 +4,7 @@ import logging
 import math
 
 from flask import Flask, Response, jsonify, request
+from werkzeug.exceptions import RequestEntityTooLarge
 
 from app.services.health_service import process_patient
 from app.utils import db
@@ -35,6 +36,11 @@ def add_api_security_headers(response):
     if request.endpoint in {"predict", "records"}:
         response.headers["Cache-Control"] = "no-store"
     return response
+
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_oversized_request(_error):
+    return jsonify({"error": "Request body must be 16 KiB or smaller"}), 413
 
 
 @app.before_request
